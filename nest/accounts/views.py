@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 @csrf_exempt
 def signup(request):
     if request.method == "POST":
+        print('enter')
         email = request.POST.get("email")
         password = request.POST.get("password")
         if not email or not password:
@@ -34,7 +35,7 @@ def signup(request):
 
         send_email(email, otp)
         return HttpResponse(f"An Email Has been sent to your Registered Mail Id as <b>{email}</b>")
-    return render(request, "accounts/signup.html")
+    return render(request, "accounts/register.html")
 
 @csrf_exempt
 def activate(request, email, otp):
@@ -50,6 +51,7 @@ def activate(request, email, otp):
 @csrf_exempt
 def acc_login(request):
     if request.method == "POST":
+        print('enter')
         email = request.POST.get("email")
         password = request.POST.get("password")
         if not email or not password:
