@@ -198,12 +198,13 @@
                                     </a>
                                     <a href="shop-wishlist.html"><span class="lable">Wishlist</span></a>
                                 </div> -->
+                                {% if request.user.is_authenticated %}
                                 <div class="header-action-icon-2">
                                     <a class="mini-cart-icon" href="shop-cart.html">
                                         <img alt="Nest" src="/static/imgs/theme/icons/icon-cart.svg" />
-                                        <span class="pro-count blue">2</span>
+                                        <span class="pro-count blue">{{request.user.profile.get_cart_count}}</span>
                                     </a>
-                                    <a href="shop-cart.html"><span class="lable">Cart</span></a>
+                                    <a href="/cart"><span class="lable">Cart</span></a>
                                     <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                         <ul>
                                             <li>
@@ -242,6 +243,14 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% else %}
+                                <div class="header-action-icon-2">
+                                    <a class="mini-cart-icon" href="shop-cart.html">
+                                        <img alt="Nest" src="/static/imgs/theme/icons/icon-cart.svg" />
+                                    </a>
+                                    <a href="/accounts/login/"><span class="lable">Cart</span></a>
+                                </div>
+                                {% endif %}
                                 <div class="header-action-icon-2">
                                     <a href="page-account.html">
                                         <img class="svgInject" alt="Nest" src="/static/imgs/theme/icons/icon-user.svg" />
@@ -260,7 +269,7 @@
                                                 <a href="page-account.html"><i class="fi fi-rs-user mr-10"></i>My Orders</a>
                                             </li>
                                             <li>
-                                                <a href="page-login.html"><i class="fi fi-rs-sign-out mr-10"></i>Sign out</a>
+                                                <a href="/accounts/logout/"><i class="fi fi-rs-sign-out mr-10"></i>Sign out</a>
                                             </li>
                                             {% else %}
                                             <li>
@@ -358,7 +367,7 @@
                                         <a class="active" href="/">Home</a>
                                     </li>
                                     <li>
-                                        <a href="/aboutus">About</a>
+                                        <a href="/about">About</a>
                                     </li>
                                     <li>
                                         <a href="/shop">Shop</a>

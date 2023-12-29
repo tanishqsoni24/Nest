@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from base.helpers import *
 from django.contrib.auth.models import User
@@ -71,3 +71,7 @@ def acc_login(request):
         return HttpResponse("Logged In")
     return render(request, "accounts/login.html")
         
+def acc_logout(request):
+    logout(request)
+    return redirect("/")
+

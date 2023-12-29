@@ -15,7 +15,7 @@ def generate_otp():
 
 def send_email(email, otp):
     subject = "OTP for Account Verification"
-    activation_link = f"http://192.168.68.112:8000/accounts/activate/{email}/{otp}/"
+    activation_link = f"http://192.168.1.10:8000/accounts/activate/{email}/{otp}/"
     message = f"Activate Your Account by Clicking on this Link : "
     email_from = settings.EMAIL_HOST_USER
     message = format_html(
