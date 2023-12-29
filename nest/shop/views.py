@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-from accounts.models import Profile
+from django.http import HttpResponse, HttpResponseRedirect
+from accounts.models import *
 
 # Create your views here.
 
@@ -50,3 +50,76 @@ def post_review(request, slug):
         review_obj.save()
         return redirect("/product/" + slug + "/")
     return HttpResponse("Invalid Request")
+
+def cart(request, slug):
+    if request.user.is_authenticated:
+        product = Product.objects.filter(p_slug = slug).first()
+        user = request.user
+        cart_obj = Cart.objects.filter(user = user, is_paid=False).first()
+        if not cart_obj:
+            cart_obj = Cart.objects.create(user = user)
+            cart_obj.save()
+            cart_item_obj = CartItems.objects.filter(cart = cart_obj, product = product).first()
+            if cart_item_obj:
+                cart_item_obj.quantity += 1
+                cart_item_obj.total += product.p_price
+                cart_item_obj.save()
+            else:
+                cart_item_obj = CartItems.objects.create(cart = cart_obj, product = product, quantity = 1, price = product.p_price, total = product.p_price)
+                cart_item_obj.save()
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        cart_item_obj = CartItems.objects.filter(cart = cart_obj, product = product).first()
+        if cart_item_obj:
+            cart_item_obj.quantity += 1
+            cart_item_obj.total += product.p_price
+            cart_item_obj.save()
+        else:
+            cart_item_obj = CartItems.objects.create(cart = cart_obj, product = product, quantity = 1, price = product.p_price, total = product.p_price)
+            cart_item_obj.save()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    return HttpResponse("Invalid Request")
+
+def view_cart(request):
+    if request.user.is_authenticated:
+        user = request.user
+        cart_obj = Cart.objects.filter(user = user, is_paid=False).first()
+        if not cart_obj:
+            return HttpResponse("Cart is Empty")
+        cart_items = cart_obj.cart_items.all()
+        context = {
+            "cart_items" : cart_items,
+            "cart" : cart_obj
+        }
+        return render(request, "shop/cart.html", context)
+    return HttpResponse("Invalid Request")
+
+def clear_cart(request):
+    if request.user.is_authenticated:
+        user = request.user
+        cart_obj = Cart.objects.filter(user = user, is_paid=False).first()
+        if not cart_obj:
+            return HttpResponse("Cart is Empty")
+        cart_items = cart_obj.cart_items.all()
+        cart_items.delete()
+        return redirect("/cart/")
+    return HttpResponse("Invalid Request")
+
+def remove_item(request, slug):
+    if request.user.is_authenticated:
+        user = request.user
+        cart_obj = Cart.objects.filter(user = user, is_paid=False).first()
+        if not cart_obj:
+            return HttpResponse("Cart is Empty")
+        product = Product.objects.filter(p_slug = slug).first()
+        cart_item_obj = CartItems.objects.filter(cart = cart_obj, product = product).first()
+        if not cart_item_obj:
+            return HttpResponse("Item Not Found")
+        cart_item_obj.delete()
+        return redirect("/cart/")
+    return HttpResponse("Invalid Request")
+
+def about(request):
+    return render(request, "shop/about.html")
+
+def contact(request):
+    return render(request, "shop/contact.html")
